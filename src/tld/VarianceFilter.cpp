@@ -24,6 +24,7 @@
  */
 
 #include "VarianceFilter.h"
+
 #include "IntegralImage.h"
 #include "DetectorCascade.h"
 

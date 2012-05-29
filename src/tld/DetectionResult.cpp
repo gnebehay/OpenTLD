@@ -24,6 +24,7 @@
  */
 
 #include "DetectionResult.h"
+
 #include "TLDUtil.h"
 
 namespace tld {

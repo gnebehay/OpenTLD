@@ -3,13 +3,13 @@
 #ifndef QTCONFIGGUI_H
 #define QTCONFIGGUI_H
 
+#include "ui_qtconfiggui.h"
+
 #include <QtGui/QApplication>
 #include <QFileDialog>
 #include <QDialog>
 
 #include "settings.h"
-
-#include "ui_qtconfiggui.h"
 
 using namespace tld;
 

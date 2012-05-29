@@ -26,7 +26,9 @@
 #ifndef ENSEMBLECLASSIFIER_H_
 #define ENSEMBLECLASSIFIER_H_
 
-#include <opencv/cv.h>
+#include <opencv2/core/core.hpp>
+
+#include "DetectionResult.h"
 
 using namespace cv;
 

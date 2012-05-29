@@ -24,8 +24,10 @@
  */
 
 #include "MedianFlowTracker.h"
-#include "fbtrack.h"
+
 #include <cmath>
+
+#include "fbtrack.h"
 
 namespace tld {
 

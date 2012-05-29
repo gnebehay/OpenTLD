@@ -17,9 +17,11 @@
 *
 */
 #include "TLDUtil.h"
+
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include "NormalizedPatch.h"
 #include "DetectorCascade.h"
-
 
 using namespace std;
 

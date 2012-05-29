@@ -27,7 +27,7 @@
 #define TLDUTIL_H_
 
 #include <utility>
-#include <opencv/cv.h>
+#include <opencv2/core/core.hpp>
 
 using namespace cv;
 using namespace std;

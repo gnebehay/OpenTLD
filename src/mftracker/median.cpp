@@ -16,8 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-#include <stdlib.h>
-#include <string.h>
+
 /**
  * @file median.c
  *
@@ -26,11 +25,16 @@
  * @brief
  */
 
-#define ELEM_SWAP(a,b) { register float t=(a);(a)=(b);(b)=t; }
 /***********************************************************
  * INCLUDES
  ***********************************************************/
 #include "median.h"
+
+#include <cstdlib>
+#include <cstring>
+
+#define ELEM_SWAP(a,b) { register float t=(a);(a)=(b);(b)=t; }
+
 /***********************************************************
  * FUNCTION
  ***********************************************************/

@@ -16,8 +16,10 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-#include "Main.h"
+
 #include "config.h"
+
+#include "Main.h"
 #include "qtconfiggui.h"
 
 using namespace std;

@@ -28,10 +28,13 @@
  ***********************************************************/
 
 #include "lk.h"
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-#include <math.h>
-#include <stdio.h>
+
+#include <cmath>
+#include <cstdio>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc_c.h>
+#include <opencv2/video/tracking.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 /***********************************************************
  * CONSTANT AND MACRO DEFINITIONS
