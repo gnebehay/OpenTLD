@@ -21,8 +21,7 @@
 #define GUI_H_
 
 #include <string>
-
-#include <opencv/highgui.h>
+#include <opencv2/highgui/highgui.hpp>
 
 namespace tld {
 

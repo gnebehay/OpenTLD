@@ -23,13 +23,13 @@
  *      Author: Georg Nebehay
  */
 
-#include <cstdlib>
-#include <math.h>
-#include <opencv/cv.h>
-
-#include "DetectorCascade.h"
 #include "EnsembleClassifier.h"
 
+#include <cstdlib>
+#include <cmath>
+#include <opencv2/core/core.hpp>
+
+#include "DetectorCascade.h"
 
 using namespace std;
 using namespace cv;

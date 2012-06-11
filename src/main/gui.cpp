@@ -24,10 +24,11 @@
  */
 
 #include "gui.h"
-#include "Main.h"
 
 #include <string>
 	using std::string;
+
+#include "Main.h"
 
 namespace tld {
 

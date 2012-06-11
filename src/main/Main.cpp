@@ -24,6 +24,9 @@
  */
 
 #include "Main.h"
+
+#include <opencv2/imgproc/imgproc_c.h>
+
 #include "config.h"
 #include "imAcq.h"
 #include "gui.h"

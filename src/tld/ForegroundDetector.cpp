@@ -25,6 +25,8 @@
 
 #include "ForegroundDetector.h"
 
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include "BlobResult.h"
 
 using namespace cv;

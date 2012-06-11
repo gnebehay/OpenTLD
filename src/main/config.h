@@ -20,9 +20,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <string>
 #include <iostream>
 #include <libconfig.h++>
-#include <string>
 
 #include "imAcq.h"
 #include "settings.h"

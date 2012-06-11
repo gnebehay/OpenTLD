@@ -27,7 +27,7 @@
 #define DETECTIONRESULT_H_
 
 #include <vector>
-#include <opencv/cv.h>
+#include <opencv2/core/core.hpp>
 
 using namespace std;
 using namespace cv;

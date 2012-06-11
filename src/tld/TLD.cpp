@@ -24,9 +24,14 @@
  */
 
 #include "TLD.h"
+
+#include <cstdio>
+#include <iostream>
+#include <opencv2/imgproc/imgproc.hpp>
+
 #include "NNClassifier.h"
 #include "TLDUtil.h"
-#include <iostream>
+
 
 using namespace std;
 

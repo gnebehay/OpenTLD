@@ -4,7 +4,6 @@
 #include "qtconfiggui.h"
 #include "ui_qtconfiggui.h"
 
-
 #include <iostream>
 
 using namespace std;
