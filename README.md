@@ -81,6 +81,9 @@ Use CMake to build the project. You can use "cmake-gui", if you need a graphical
 	* Generate
 * Windows: go to the binary directory and build the solutions you want (You have to compile in RELEASE mode):
 	* opentld: build the project
+		- If you're using Visual Studio, you may have to edit the opentld project's properties, since I haven't
+		figured out how to make that work via CMake. In the Linker/input tab, put "atlthunk.lib;libcmt.lib" into 
+		"Ignore specific default libraries".
 	* INSTALL: install the project
 * Linux: go with the terminal to the build directory
 	* make: build the project

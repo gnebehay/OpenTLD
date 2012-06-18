@@ -29,6 +29,8 @@
 
 #include "TLDUtil.h"
 
+using namespace cv;
+
 namespace tld {
 
 //TODO: Convert this to a function
@@ -127,8 +129,11 @@ void DetectorCascade::release() {
 	numScales = 0;
 
 	delete[] scales;
+	scales = NULL;
 	delete[] windows;
+	windows = NULL;
 	delete[] windowOffsets;
+	windowOffsets = NULL;
 
 	objWidth = -1;
 	objHeight = -1;
@@ -236,7 +241,7 @@ void DetectorCascade::initWindowOffsets() {
 	}
 }
 
-void DetectorCascade::detect(Mat img) {
+void DetectorCascade::detect(const Mat& img) {
 	//For every bounding box, the output is confidence, pattern, variance
 
 	detectionResult->reset();

@@ -29,15 +29,18 @@
 #include "gui.h"
 #include "TLDUtil.h"
 
+using namespace tld;
+using namespace cv;
+
 void Main::doWork() {
 
 	IplImage * img = imAcqGetImg(imAcq);
-	IplImage * grey = cvCreateImage( cvGetSize(img), 8, 1 );
-	cvCvtColor( img,grey, CV_BGR2GRAY );
+	Mat grey(img->height, img->width, CV_8UC1);
+	cvtColor( img,grey, CV_BGR2GRAY );
 
-	tld->detectorCascade->imgWidth = grey->width;
-	tld->detectorCascade->imgHeight = grey->height;
-	tld->detectorCascade->imgWidthStep = grey->widthStep;
+	tld->detectorCascade->imgWidth = grey.cols;
+	tld->detectorCascade->imgHeight = grey.rows;
+	tld->detectorCascade->imgWidthStep = grey.step;
 
 	if(selectManually) {
 
@@ -52,24 +55,9 @@ void Main::doWork() {
 
 		initialBB[0] = box.x;
 		initialBB[1] = box.y;
-		
-		if (box.width < 0) {
-			initialBB[0] += box.width;
-			initialBB[2] = abs(box.width);
-		}
-		else {
-			initialBB[2] = box.width;
-		}
-		if (box.height < 0) {
-			initialBB[1] += box.height;
-			initialBB[3] = abs(box.height);
-		}
-		else {
-			initialBB[3] = box.height;
-		}
+		initialBB[2] = box.width;
+		initialBB[3] = box.height;
 	}
-
-
 
 	FILE * resultsFile = NULL;
 
@@ -101,8 +89,7 @@ void Main::doWork() {
 				printf("current image is NULL, assuming end of input.\n");
 				break;
 			}
-			grey = cvCreateImage( cvGetSize(img), 8, 1 );
-			cvCvtColor( img, grey, CV_BGR2GRAY );
+			cvtColor( img, grey, CV_BGR2GRAY );
 		}
 
 		if(!skipProcessingOnce) {
@@ -171,7 +158,7 @@ void Main::doWork() {
 					ForegroundDetector* fg = tld->detectorCascade->foregroundDetector;
 
 					if(fg->bgImg.empty()) {
-						fg->bgImg = cvCloneImage(grey);
+						fg->bgImg = grey.clone();
 					} else {
 						fg->bgImg.release();
 					}
@@ -222,7 +209,6 @@ void Main::doWork() {
 
 		if(!reuseFrameOnce) {
 			cvReleaseImage(&img);
-			cvReleaseImage(&grey);
 		} else {
 			reuseFrameOnce = false;
 		}

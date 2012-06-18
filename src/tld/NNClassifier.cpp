@@ -27,6 +27,9 @@
 #include "DetectorCascade.h"
 #include "TLDUtil.h"
 
+using namespace std;
+using namespace cv;
+
 namespace tld {
 
 NNClassifier::NNClassifier() {
@@ -102,7 +105,7 @@ float NNClassifier::classifyPatch(NormalizedPatch * patch) {
 	return distance;
 }
 
-float NNClassifier::classifyBB(Mat img, Rect* bb) {
+float NNClassifier::classifyBB(const Mat& img, Rect* bb) {
 	NormalizedPatch patch;
 
 	tldExtractNormalizedPatchRect(img, bb, patch.values);
@@ -110,7 +113,7 @@ float NNClassifier::classifyBB(Mat img, Rect* bb) {
 
 }
 
-float NNClassifier::classifyWindow(Mat img, int windowIdx) {
+float NNClassifier::classifyWindow(const Mat& img, int windowIdx) {
 	NormalizedPatch patch;
 
 	int * bbox = &windows[TLD_WINDOW_SIZE*windowIdx];
@@ -119,7 +122,7 @@ float NNClassifier::classifyWindow(Mat img, int windowIdx) {
 	return classifyPatch(&patch);
 }
 
-bool NNClassifier::filter(Mat img, int windowIdx) {
+bool NNClassifier::filter(const Mat& img, int windowIdx) {
 	if(!enabled) return true;
 
 	float conf = classifyWindow(img, windowIdx);

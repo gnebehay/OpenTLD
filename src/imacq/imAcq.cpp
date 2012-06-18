@@ -25,18 +25,27 @@
 
 ImAcq * imAcqAlloc() {
 	ImAcq * imAcq = (ImAcq *)malloc(sizeof(ImAcq));
+	if(imAcq == NULL)
+		return NULL;
+	imAcq->vi = new videoInput();
+	if(imAcq->vi == NULL) {
+		free(imAcq);
+		return NULL;
+	}
+	
 	imAcq->method = IMACQ_CAM;
 	imAcq->currentFrame = 1;
 	imAcq->lastFrame = 0;
 	imAcq->camNo = 0;
-	imAcq->fps = 24;
+	imAcq->fps = 30;
 	return imAcq;
 }
 
 void imAcqInit(ImAcq * imAcq) {
+	imAcq->capture == NULL;
 	if(imAcq->method == IMACQ_CAM) {
-		imAcq->capture = cvCaptureFromCAM(imAcq->camNo);
-		if(imAcq->capture == NULL) {
+		int num = imAcq->vi->listDevices();
+		if(!imAcq->vi->setupDevice(imAcq->camNo)) {
 			printf("Error: Unable to initialize camera\n");
 			exit(0);
 		}
@@ -71,7 +80,12 @@ void imAcqInit(ImAcq * imAcq) {
 }
 
 void imAcqFree(ImAcq * imAcq) {
-	if((imAcq->method == IMACQ_CAM) || (imAcq->method == IMACQ_VID)) {
+	switch(imAcq->method) {
+	case IMACQ_CAM:
+		imAcq->vi->stopDevice(imAcq->camNo);
+		delete imAcq->vi;
+		break;
+	case IMACQ_VID:
 		cvReleaseCapture(&imAcq->capture);
 	}
 
@@ -107,7 +121,7 @@ IplImage * imAcqGetImgByCurrentTime(ImAcq * imAcq) {
 	//Calculate current image number
 	if(imAcq->method == IMACQ_CAM) {
 		//printf("grabbing image from sensor");
-		return imAcqGrab(imAcq->capture);
+		return imAcqGrab(imAcq);
 	}
 
 	float secondsPassed = (cvGetTickCount() - imAcq->startTime)/cvGetTickFrequency();
@@ -123,11 +137,10 @@ IplImage * imAcqGetImgByCurrentTime(ImAcq * imAcq) {
 }
 
 IplImage * imAcqGetImg(ImAcq * imAcq) {
-
 	IplImage * img = NULL;
-
+	
 	if(imAcq->method == IMACQ_CAM || imAcq->method == IMACQ_VID) {
-		img = imAcqGrab(imAcq->capture);
+		img = imAcqGrab(imAcq);
 	}
 
 	if(imAcq->method == IMACQ_IMGS) {
@@ -143,18 +156,26 @@ IplImage * imAcqGetImg(ImAcq * imAcq) {
 	return img;
 }
 
-IplImage * imAcqGrab(CvCapture * capture)
+IplImage * imAcqGrab(ImAcq* imAcq)
 {
 	IplImage* frame;
 
-	frame = cvQueryFrame( capture );
+	if(imAcq->method == IMACQ_CAM)
+		frame = cvCreateImage(cvSize(imAcq->vi->getWidth(imAcq->camNo), imAcq->vi->getHeight(imAcq->camNo)), IPL_DEPTH_8U, 3);
+	else
+		frame = cvQueryFrame( imAcq->capture );
 
 	if(frame == NULL) {
 		printf("Error: Unable to grab image from video\n");
 		return NULL;
 	}
 
-	return cvCloneImage(frame);
+	if(imAcq->method == IMACQ_CAM) {
+		imAcq->vi->getPixels(imAcq->camNo, (unsigned char*)frame->imageData, false, true);
+		return frame;
+	}
+	else
+		return cvCloneImage(frame);
 }
 
 IplImage * imAcqGetImgByFrame(ImAcq * imAcq, int fNo) {

@@ -29,6 +29,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace cv;
 
 namespace tld {
 
@@ -40,7 +41,7 @@ TLD::TLD() {
 	valid = false;
 	wasValid = false;
 	learning = false;
-	currBB = NULL;
+	currBB = prevBB = NULL;
 
 	detectorCascade = new DetectorCascade();
 	nnClassifier = detectorCascade->nnClassifier;
@@ -64,6 +65,7 @@ void TLD::release() {
 void TLD::storeCurrentData() {
 	prevImg.release();
 	prevImg = currImg; //Store old image (if any)
+	delete prevBB;
 	prevBB = currBB;		//Store old bounding box (if any)
 
 	detectorCascade->cleanPreviousData(); //Reset detector results
@@ -72,7 +74,7 @@ void TLD::storeCurrentData() {
 	wasValid = valid;
 }
 
-void TLD::selectObject(Mat img, Rect * bb) {
+void TLD::selectObject(const Mat& img, Rect * bb) {
 	//Delete old object
 	detectorCascade->release();
 
@@ -83,7 +85,7 @@ void TLD::selectObject(Mat img, Rect * bb) {
 	detectorCascade->init();
 
 	currImg = img;
-	currBB = bb;
+	currBB = tldCopyRect(bb);
 	currConf = 1;
 	valid = true;
 
@@ -91,7 +93,7 @@ void TLD::selectObject(Mat img, Rect * bb) {
 
 }
 
-void TLD::processImage(Mat img) {
+void TLD::processImage(const Mat& img) {
 	storeCurrentData();
 	Mat grey_frame;
 	cvtColor( img,grey_frame, CV_RGB2GRAY );
@@ -209,7 +211,7 @@ void TLD::initialLearning() {
 		int idx = positiveIndices.at(i).first;
 		//Learn this bounding box
 		//TODO: Somewhere here image warping might be possible
-		detectorCascade->ensembleClassifier->learn(currImg, &detectorCascade->windows[TLD_WINDOW_SIZE*idx], true, &detectionResult->featureVectors[detectorCascade->numTrees*idx]);
+		detectorCascade->ensembleClassifier->learn(&detectorCascade->windows[TLD_WINDOW_SIZE*idx], true, &detectionResult->featureVectors[detectorCascade->numTrees*idx]);
 	}
 
 	srand(1); //TODO: This is not guaranteed to affect random_shuffle
@@ -293,14 +295,14 @@ void TLD::learn() {
 	for(size_t i = 0; i < negativeIndices.size(); i++) {
 		int idx = negativeIndices.at(i);
 		//TODO: Somewhere here image warping might be possible
-		detectorCascade->ensembleClassifier->learn(currImg, &detectorCascade->windows[TLD_WINDOW_SIZE*idx], false, &detectionResult->featureVectors[detectorCascade->numTrees*idx]);
+		detectorCascade->ensembleClassifier->learn(&detectorCascade->windows[TLD_WINDOW_SIZE*idx], false, &detectionResult->featureVectors[detectorCascade->numTrees*idx]);
 	}
 
 	//TODO: Randomization might be a good idea
 	for(int i = 0; i < numIterations; i++) {
 		int idx = positiveIndices.at(i).first;
 		//TODO: Somewhere here image warping might be possible
-		detectorCascade->ensembleClassifier->learn(currImg, &detectorCascade->windows[TLD_WINDOW_SIZE*idx], true, &detectionResult->featureVectors[detectorCascade->numTrees*idx]);
+		detectorCascade->ensembleClassifier->learn(&detectorCascade->windows[TLD_WINDOW_SIZE*idx], true, &detectionResult->featureVectors[detectorCascade->numTrees*idx]);
 	}
 
 	for(size_t i = 0; i < negativeIndicesForNN.size(); i++) {

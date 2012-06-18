@@ -27,6 +27,8 @@
 #include "IntegralImage.h"
 #include "DetectorCascade.h"
 
+using namespace cv;
+
 namespace tld {
 
 VarianceFilter::VarianceFilter() {
@@ -58,7 +60,7 @@ float VarianceFilter::calcVariance(int *off) {
 	return mX2 - mX*mX;
 }
 
-void VarianceFilter::nextIteration(Mat img) {
+void VarianceFilter::nextIteration(const Mat& img) {
 	if(!enabled) return;
 
 	release();

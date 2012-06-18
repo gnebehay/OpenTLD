@@ -28,12 +28,10 @@
 
 #include <opencv/cv.h>
 
-using namespace cv;
-
 namespace tld {
 
 class EnsembleClassifier {
-	unsigned char* img;
+	const unsigned char* img;
 
 	float calcConfidence(int * featureVector);
 	int calcFernFeature(int windowIdx, int treeIdx);
@@ -48,7 +46,7 @@ public:
 
 	int imgWidthStep;
 	int numScales;
-	Size* scales;
+	cv::Size* scales;
 
 	int* windowOffsets;
 	int* featureOffsets;
@@ -69,10 +67,10 @@ public:
 	void initFeatureOffsets();
 	void initPosteriors();
 	void release();
-	void nextIteration(Mat img);
+	void nextIteration(const cv::Mat& img);
 	void classifyWindow(int windowIdx);
 	void updatePosterior(int treeIdx, int idx, int positive, int amount);
-	void learn(Mat img, int * boundary, int positive, int * featureVector);
+	void learn(int * boundary, int positive, int * featureVector);
 	bool filter(int i);
 };
 

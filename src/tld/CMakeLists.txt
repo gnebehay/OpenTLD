@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 
-find_package(OpenCV REQUIRED)
-
 add_library(tld
     Clustering.cpp
     DetectionResult.cpp
@@ -13,5 +11,5 @@ add_library(tld
     TLD.cpp
     TLDUtil.cpp
     VarianceFilter.cpp)
-    
-target_link_libraries(tld cvblobs mftracker ${OpenCV_LIBS})
+
+include_directories(${OpenCV_INCLUDE_DIRS})

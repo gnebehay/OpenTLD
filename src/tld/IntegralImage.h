@@ -28,8 +28,6 @@
 
 #include <opencv/cv.h>
 
-using namespace cv;
-
 namespace tld {
 
 template <class T>
@@ -40,7 +38,7 @@ public:
 	int width;
 	int height;
 
-	IntegralImage(Size size) {
+	IntegralImage(cv::Size size) {
 		data = new T[size.width*size.height];
 	}
 
@@ -48,9 +46,9 @@ public:
 		delete[] data;
 	}
 
-	void calcIntImg(Mat img, bool squared = false)
+	void calcIntImg(const cv::Mat& img, bool squared = false)
 	{
-		unsigned char *input = (unsigned char*)(img.data);
+		const unsigned char *input = (const unsigned char*)(img.data);
 		T *output = data;
 		for(int i = 0;i < img.cols;i++){
 			for(int j = 0;j < img.rows;j++){

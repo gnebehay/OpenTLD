@@ -21,12 +21,15 @@
  *
  *  Created on: 18 May 2011
  *      Author: Georg Nebehay
+ *
+ * Modified to work with videoInput: 4 June 2012 by João Silva
  */
 
 #ifndef IMACQ_IMPL_H_
 #define IMACQ_IMPL_H_
 
 #include <opencv/highgui.h>
+#include <videoInput.h>
 
 /**
  * Capturing method
@@ -42,10 +45,11 @@ typedef struct {
 	int method;
 	const char * imgPath;
 	CvCapture * capture;
+	videoInput * vi;
+	int camNo;
 	int lastFrame;
 	int currentFrame;
 	int startFrame;
-	int camNo;
 	double startTime;
 	float fps;
 } ImAcq ;
@@ -67,7 +71,7 @@ IplImage * imAcqGetImgByCurrentTime(ImAcq * imAcq);
 IplImage * imAcqLoadImg(ImAcq * imAcq, char * path);
 IplImage * imAcqLoadCurrentFrame(ImAcq * imAcq);
 IplImage * imAcqLoadVidFrame(CvCapture * capture);
-IplImage * imAcqGrab(CvCapture* capture);
+IplImage * imAcqGrab(ImAcq* imAcq);
 void imAcqAdvance(ImAcq * imAcq);
 void imAcqFree(ImAcq *);
 
