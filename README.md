@@ -113,7 +113,7 @@ Navigate with the terminal to the build directory
 * `easy_install numpy`
 * `brew install cmake`
 * `brew install opencv`
-* `make` build the project
+* `cmake` build the project
 
 # Debian package
 * Navigate with the terminal into the root dictionary of OpenTLD (OpenTLD/)
