@@ -180,7 +180,7 @@ void Main::doWork()
 
 			if(showTrajectory)
 			{
-				trajectory.drawTrajectrory(img);
+				trajectory.drawTrajectory(img);
 			}
 
             CvFont font;

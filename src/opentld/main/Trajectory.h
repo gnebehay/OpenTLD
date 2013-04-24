@@ -67,7 +67,7 @@ public:
 	 * Draws the trajectory into an image.
 	 * @param image image to draw
 	 */
-	void drawTrajectrory(IplImage * image);
+	void drawTrajectory(IplImage * image);
 private:
 	std::size_t m_length; ///< number of the last frames which are considered by the trajectory
 	std::vector<CvPoint> m_track_positions; ///< vector containing the locations of the points

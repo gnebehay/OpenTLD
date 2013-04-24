@@ -67,7 +67,7 @@ void Trajectory::addPoint(CvPoint point, CvScalar color)
 	}
 }
 
-void Trajectory::drawTrajectrory(IplImage * image)
+void Trajectory::drawTrajectory(IplImage * image)
 {
 	CvPoint tempPoint;
 	bool needSecondPoint = false;
