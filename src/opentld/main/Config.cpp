@@ -36,6 +36,7 @@ static char help_text[] =
     "    IMGS: capture from images\n"
     "    CAM: capture from connected camera\n"
     "    VID: capture from a video\n"
+    "    STREAM: capture from a stream\n"
     "[-e <path>] export model after run to <path>\n"
     "[-f] shows foreground\n"
     "[-i <path>] <path> to the images or to the video\n"
@@ -119,6 +120,11 @@ int Config::init(int argc, char **argv)
             else if(!strcmp(optarg, "IMGS"))
             {
                 m_settings.m_method = IMACQ_IMGS;
+                m_methodSet = true;
+            }
+            else if(!strcmp(optarg, "STREAM"))
+            {
+                m_settings.m_method = IMACQ_STREAM;
                 m_methodSet = true;
             }
 
@@ -220,6 +226,20 @@ int Config::init(int argc, char **argv)
             catch(const libconfig::SettingNotFoundException &nfex)
             {
                 cerr << "Error: Unable to read image path." << endl;
+                return PROGRAM_EXIT;
+            }
+        }
+        else if(method.compare("STREAM") == 0)
+        {
+            m_settings.m_method = IMACQ_STREAM;
+
+            try
+            {
+                m_cfg.lookupValue("acq.imgPath", m_settings.m_imagePath);
+            }
+            catch(const libconfig::SettingNotFoundException &nfex)
+            {
+                cerr << "Error: Unable to read stream URL." << endl;
                 return PROGRAM_EXIT;
             }
         }

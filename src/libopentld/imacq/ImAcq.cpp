@@ -81,14 +81,25 @@ void imAcqInit(ImAcq *imAcq)
         //This produces strange results on some videos and is deactivated for now.
         //imAcqVidSetNextFrameNumber(imAcq, imAcq->currentFrame);
     }
+    else if(imAcq->method == IMACQ_STREAM)
+    {
+        imAcq->capture = cvCaptureFromFile(imAcq->imgPath);
 
+        if(imAcq->capture == NULL)
+        {
+            printf("Error: Unable to open video\n");
+            exit(0);
+        }
+
+    }
+    
     imAcq->startFrame = imAcq->currentFrame;
     imAcq->startTime = cvGetTickCount();
 }
 
 void imAcqFree(ImAcq *imAcq)
 {
-    if((imAcq->method == IMACQ_CAM) || (imAcq->method == IMACQ_VID))
+    if((imAcq->method == IMACQ_CAM) || (imAcq->method == IMACQ_VID) || (imAcq->method == IMACQ_STREAM))
     {
         cvReleaseCapture(&imAcq->capture);
     }
@@ -128,7 +139,7 @@ IplImage *imAcqLoadCurrentFrame(ImAcq *imAcq)
 IplImage *imAcqGetImgByCurrentTime(ImAcq *imAcq)
 {
     //Calculate current image number
-    if(imAcq->method == IMACQ_CAM)
+    if((imAcq->method == IMACQ_CAM) || (imAcq->method == IMACQ_STREAM))
     {
         //printf("grabbing image from sensor");
         return imAcqGrab(imAcq->capture);
@@ -161,7 +172,7 @@ IplImage *imAcqGetImg(ImAcq *imAcq)
         img = imAcqLoadCurrentFrame(imAcq);
     }
 
-    if(imAcq->method == IMACQ_LIVESIM)
+    if((imAcq->method == IMACQ_LIVESIM) || (imAcq->method == IMACQ_STREAM))
     {
         img = imAcqGetImgByCurrentTime(imAcq);
     }

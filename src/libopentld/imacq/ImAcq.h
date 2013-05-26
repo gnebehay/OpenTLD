@@ -21,7 +21,9 @@
  * imAcq.h
  *
  *  Created on: 18 May 2011
- *      Author: Georg Nebehay
+ *      Author: Georg Nebehaiy
+ *  Modified on: 26th May 2013
+ *      By: Jonathan Senecal
  */
 
 #ifndef IMACQ_IMPL_H_
@@ -37,7 +39,8 @@ enum ImacqMethod
     IMACQ_IMGS, //!< Images
     IMACQ_CAM, //!< Camera
     IMACQ_VID, //!< Video
-    IMACQ_LIVESIM //!< Livesim
+    IMACQ_LIVESIM, //!< Livesim
+    IMACQ_STREAM //!< Stream
 };
 
 typedef struct

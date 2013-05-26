@@ -430,6 +430,11 @@
                <string>Video</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>Stream</string>
+              </property>
+             </item>
             </widget>
            </item>
            <item row="1" column="1">

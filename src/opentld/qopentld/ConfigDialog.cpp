@@ -187,6 +187,10 @@ void ConfigDialog::on_buttonBox_accepted()
     {
         m_settings->m_method = IMACQ_VID;
     }
+    else if(ui->comboBox_method->currentText() == "Stream")
+    {
+        m_settings->m_method = IMACQ_STREAM;
+    }
     else
     {
         m_settings->m_method = IMACQ_IMGS;
