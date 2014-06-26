@@ -38,9 +38,8 @@ const double N_A_N = -1.0;
 /**
  * Size of the search window of each pyramid level in cvCalcOpticalFlowPyrLK.
  */
-int win_size_lk = 4;
-CvPoint2D32f *points[3] = { 0, 0, 0 };
-static IplImage **PYR = 0;
+const int win_size_lk = 4;
+
 
 /**
  * Calculates euclidean distance between the point pairs.
@@ -110,31 +109,6 @@ void normCrossCorrelation(IplImage *imgI, IplImage *imgJ,
 }
 
 /**
- * Needed before start of trackLK and at the end of the program for cleanup.
- * Handles PYR(Pyramid cache) variable.
- */
-void initImgs()
-{
-    if(PYR != 0)
-    {
-        int i;
-
-        for(i = 0; i < MAX_IMG; i++)
-        {
-            cvReleaseImage(&(PYR[i]));
-            PYR[i] = 0;
-        }
-
-        free(PYR);
-        PYR = 0;
-        //printf("LK: deallocated\n");
-    }
-
-    PYR = (IplImage **) calloc(MAX_IMG, sizeof(IplImage *));
-    //printf("LK: initialized\n");
-}
-
-/**
  * Tracks Points from 1.Image to 2.Image.
  * Need initImgs before start and at the end of the program for cleanup.
  *
@@ -165,7 +139,7 @@ int trackLK(IplImage *imgI, IplImage *imgJ, float ptsI[], int nPtsI,
     //TODO: watch NaN cases
     //double nan = std::numeric_limits<double>::quiet_NaN();
     //double inf = std::numeric_limits<double>::infinity();
-
+    CvPoint2D32f *points[3] = { 0, 0, 0 };
     // tracking
     int I, J, winsize_ncc;
     CvSize pyr_sz;
@@ -183,9 +157,7 @@ int trackLK(IplImage *imgI, IplImage *imgJ, float ptsI[], int nPtsI,
 
     //NOTE: initImgs() must be used correctly or memleak will follow.
     pyr_sz = cvSize(imgI->width + 8, imgI->height / 3);
-    PYR[I] = cvCreateImage(pyr_sz, IPL_DEPTH_32F, 1);
-    PYR[J] = cvCreateImage(pyr_sz, IPL_DEPTH_32F, 1);
-
+    
     // Points
     if(nPtsJ != nPtsI)
     {
@@ -210,13 +182,13 @@ int trackLK(IplImage *imgI, IplImage *imgJ, float ptsI[], int nPtsI,
     }
 
     //lucas kanade track
-    cvCalcOpticalFlowPyrLK(imgI, imgJ, PYR[I], PYR[J], points[0], points[1],
+    cvCalcOpticalFlowPyrLK(imgI, imgJ, 0, 0, points[0], points[1],
                            nPtsI, cvSize(win_size_lk, win_size_lk), level, status, 0, cvTermCriteria(
                                CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03),
                            CV_LKFLOW_INITIAL_GUESSES);
 
     //backtrack
-    cvCalcOpticalFlowPyrLK(imgJ, imgI, PYR[J], PYR[I], points[1], points[2],
+    cvCalcOpticalFlowPyrLK(imgJ, imgI, 0, 0, points[1], points[2],
                            nPtsI, cvSize(win_size_lk, win_size_lk), level, statusBacktrack, 0, cvTermCriteria(
                                CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03),
                            CV_LKFLOW_INITIAL_GUESSES | CV_LKFLOW_PYR_A_READY | CV_LKFLOW_PYR_B_READY);
