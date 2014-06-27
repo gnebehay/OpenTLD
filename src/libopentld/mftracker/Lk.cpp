@@ -110,7 +110,6 @@ void normCrossCorrelation(IplImage *imgI, IplImage *imgJ,
 
 /**
  * Tracks Points from 1.Image to 2.Image.
- * Need initImgs before start and at the end of the program for cleanup.
  *
  * @param imgI      previous Image source. (isn't changed)
  * @param imgJ      actual Image target. (isn't changed)
@@ -141,7 +140,7 @@ int trackLK(IplImage *imgI, IplImage *imgJ, float ptsI[], int nPtsI,
     //double inf = std::numeric_limits<double>::infinity();
     CvPoint2D32f *points[3] = { 0, 0, 0 };
     // tracking
-    int I, J, winsize_ncc;
+    int winsize_ncc;
     CvSize pyr_sz;
     int i;
 
@@ -151,11 +150,8 @@ int trackLK(IplImage *imgI, IplImage *imgJ, float ptsI[], int nPtsI,
         level = 5;
     }
 
-    I = 0;
-    J = 1;
     winsize_ncc = 10;
 
-    //NOTE: initImgs() must be used correctly or memleak will follow.
     pyr_sz = cvSize(imgI->width + 8, imgI->height / 3);
     
     // Points
