@@ -29,7 +29,7 @@
 
 #include <vector>
 
-#include <opencv/cv.hpp>
+#include <opencv/cv.h>
 
 #include "DetectionResult.h"
 
