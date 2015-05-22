@@ -284,9 +284,9 @@ void DetectorCascade::detect(const Mat &img)
     varianceFilter->nextIteration(img); //Calculates integral images
     ensembleClassifier->nextIteration(img);
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
 
-    for(int i = 0; i < numWindows; i++)
+    for(int i = 0; (i < numWindows) && (detectionResult->confidentIndices->size() < 100); i++)
     {
 
         int *window = &windows[TLD_WINDOW_SIZE * i];
@@ -331,8 +331,6 @@ void DetectorCascade::detect(const Mat &img)
         }
 
         detectionResult->confidentIndices->push_back(i);
-
-
     }
 
     //Cluster
