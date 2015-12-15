@@ -2,7 +2,6 @@
 include_directories(imacq
     mftracker
     tld
-    ../3rdparty/cvblobs
     ${OpenCV_INCLUDE_DIRS})
 link_directories(${OpenCV_LIB_DIR})
 

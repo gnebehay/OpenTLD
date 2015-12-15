@@ -5,7 +5,6 @@ include_directories(main
     ../libopentld/imacq
     ../libopentld/mftracker
     ../libopentld/tld
-    ../3rdparty/cvblobs
     ${OpenCV_INCLUDE_DIRS})
 
 if(NOT USE_SYSTEM_LIBS)
@@ -26,14 +25,14 @@ add_library(main
     main/Settings.h
 	main/Trajectory.h)
 
-target_link_libraries(main libopentld cvblobs config++ ${OpenCV_LIBS})
+target_link_libraries(main libopentld config++ ${OpenCV_LIBS})
 
 #-------------------------------------------------------------------------------
 # opentld
 add_executable(opentld
     OpenTLD.cpp)
 
-target_link_libraries(opentld main libopentld cvblobs config++ ${OpenCV_LIBS})
+target_link_libraries(opentld main libopentld config++ ${OpenCV_LIBS})
 
 install(TARGETS opentld DESTINATION bin)
 
@@ -57,7 +56,7 @@ if(BUILD_QOPENTLD)
     set(QOPENTLD_SOURCES ${QOPENTLD_SOURCES} ${QOPENTLD_RCS_CPP} ${QOPENTLD_HEADERS_MOC} ${QOPENTLD_FORMS_HEADERS})
 
     add_executable(qopentld ${QOPENTLD_SOURCES})
-    target_link_libraries(qopentld main libopentld cvblobs config++ ${OpenCV_LIBS} ${QT_LIBRARIES})
+    target_link_libraries(qopentld main libopentld config++ ${OpenCV_LIBS} ${QT_LIBRARIES})
 
     install(TARGETS qopentld DESTINATION bin)
 endif(BUILD_QOPENTLD)
