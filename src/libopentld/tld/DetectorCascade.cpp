@@ -111,7 +111,7 @@ void DetectorCascade::propagateMembers()
     clustering->windows = windows;
     clustering->numWindows = numWindows;
 
-    foregroundDetector->minBlobSize = minSize * minSize;
+    foregroundDetector->minArea = (double)(minSize * minSize);
 
     foregroundDetector->detectionResult = detectionResult;
     varianceFilter->detectionResult = detectionResult;

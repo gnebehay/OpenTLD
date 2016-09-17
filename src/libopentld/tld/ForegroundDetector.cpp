@@ -25,8 +25,6 @@
 
 #include "ForegroundDetector.h"
 
-#include "BlobResult.h"
-
 using namespace cv;
 
 namespace tld
@@ -35,7 +33,7 @@ namespace tld
 ForegroundDetector::ForegroundDetector()
 {
     fgThreshold = 16;
-    minBlobSize = 0;
+    minArea = 0;
 }
 
 ForegroundDetector::~ForegroundDetector()
@@ -55,22 +53,27 @@ void ForegroundDetector::nextIteration(const Mat &img)
 
     Mat absImg = Mat(img.cols, img.rows, img.type());
     Mat threshImg = Mat(img.cols, img.rows, img.type());
+	std::vector<std::vector<Point> > contours;
+	std::vector<std::vector<Point> > selected_contours;
+	std::vector<Vec4i> hierarchy;
 
     absdiff(bgImg, img, absImg);
     threshold(absImg, threshImg, fgThreshold, 255, CV_THRESH_BINARY);
 
-    IplImage im = (IplImage)threshImg;
-    CBlobResult blobs = CBlobResult(&im, NULL, 0);
+	findContours(absImg, contours, hierarchy,
+					CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-    blobs.Filter(blobs, B_EXCLUDE, CBlobGetArea(), B_LESS, minBlobSize);
+    for(size_t i = 0; i < contours.size(); i++)
+		if(contourArea(contours[i]) > minArea)
+			selected_contours.push_back(contours[i]);
 
     std::vector<Rect>* fgList = detectionResult->fgList;
     fgList->clear();
 
-    for(int i = 0; i < blobs.GetNumBlobs(); i++)
+    for(size_t i = 0; i < selected_contours.size(); i++)
     {
-        CBlob *blob = blobs.GetBlob(i);
-        CvRect rect = blob->GetBoundingBox();
+        std::vector<Point> contour = selected_contours[i];
+        Rect rect = boundingRect(contour);
         fgList->push_back(rect);
     }
 

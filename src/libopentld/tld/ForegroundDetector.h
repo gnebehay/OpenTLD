@@ -40,7 +40,7 @@ class ForegroundDetector
 {
 public:
     int fgThreshold;
-    int minBlobSize;
+    double minArea;
     cv::Mat bgImg;
     DetectionResult *detectionResult;
 
