@@ -26,10 +26,12 @@ project(OpenTLD)
 
 cmake_minimum_required(VERSION 2.6)
 
+set(CMAKE_CXX_STANDARD 11)
+
 find_package(OpenCV REQUIRED)
 
 if(BUILD_QOPENTLD)
-    find_package(Qt4 REQUIRED)
+	find_package(Qt5Widgets)
 endif(BUILD_QOPENTLD)
 
 #-------------------------------------------------------------------------------
