@@ -71,9 +71,7 @@ int fbtrack(IplImage *imgI, IplImage *imgJ, float *bb, float *bbnew,
     //getFilledBBPoints(bb, numM, numN, 5, &ptTracked);
     memcpy(ptTracked, pt, sizeof(float) * sizePointsArray);
 
-    initImgs();
     trackLK(imgI, imgJ, pt, nPoints, ptTracked, nPoints, level, fb, ncc, status);
-    initImgs();
     //  char* status = *statusP;
     nlkPoints = 0;
 
