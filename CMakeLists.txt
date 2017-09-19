@@ -22,11 +22,12 @@
 # 5) build the project "PACKAGE" to create an NSIS-installer (NSIS is required)
 
 
-project(OpenTLD)
+project(OpenTLD-OCL)
 
 cmake_minimum_required(VERSION 2.6)
 
 find_package(OpenCV REQUIRED)
+find_package(OpenCL REQUIRED)
 
 if(BUILD_QOPENTLD)
     find_package(Qt4 REQUIRED)

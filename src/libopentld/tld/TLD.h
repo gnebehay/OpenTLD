@@ -18,11 +18,11 @@
 */
 
 /*
- * TLD.h
- *
- *  Created on: Nov 17, 2011
- *      Author: Georg Nebehay
- */
+* TLD.h
+*
+*  Created on: Nov 17, 2011
+*      Author: Georg Nebehay
+*/
 
 #ifndef TLD_H_
 #define TLD_H_
@@ -31,42 +31,61 @@
 
 #include "MedianFlowTracker.h"
 #include "DetectorCascade.h"
+#include  <CL/cl.h>
 
 namespace tld
 {
 
-class TLD
-{
-    void storeCurrentData();
-    void fuseHypotheses();
-    void learn();
-    void initialLearning();
-public:
-    bool trackerEnabled;
-    bool detectorEnabled;
-    bool learningEnabled;
-    bool alternating;
+	class TLD
+	{
+		void storeCurrentData();
+		void fuseHypotheses();
+		void learn();
+		void initialLearning();
+	public:
+		bool trackerEnabled;
+		bool detectorEnabled;
+		bool learningEnabled;
+		bool alternating;
 
-    MedianFlowTracker *medianFlowTracker;
-    DetectorCascade *detectorCascade;
-    NNClassifier *nnClassifier;
-    bool valid;
-    bool wasValid;
-    cv::Mat prevImg;
-    cv::Mat currImg;
-    cv::Rect *prevBB;
-    cv::Rect *currBB;
-    float currConf;
-    bool learning;
+		MedianFlowTracker *medianFlowTracker;
+		DetectorCascade *detectorCascade;
+		NNClassifier *nnClassifier;
+		bool valid;
+		bool wasValid;
+		cv::Mat prevImg;
+		cv::Mat currImg;
+		cv::Rect *prevBB;
+		cv::Rect *currBB;
+		float currConf;
+		bool learning;
 
-    TLD();
-    virtual ~TLD();
-    void release();
-    void selectObject(const cv::Mat &img, cv::Rect *bb);
-    void processImage(const cv::Mat &img);
-    void writeToFile(const char *path);
-    void readFromFile(const char *path);
-};
+		TLD();
+		virtual ~TLD();
+		void release();
+		void selectObject(const cv::Mat &img, cv::Rect *bb);
+		void processImage(const cv::Mat &img);
+		void writeToFile(const char *path);
+		void readFromFile(const char *path);
+
+
+		//for opencl begin	
+		int numWindows;
+		cl_platform_id  platform;	//the chosen platform
+		cl_int	        status;
+		cl_device_id    *devices;
+		cl_context       context;
+		cl_command_queue commandQueue;
+		cl_program       program;
+		cl_mem           inputBuffer;
+		cl_mem           outputBuffer;
+		cl_kernel        kernel;
+		//for opencl end
+		void cltldOverlapRect(int *windows, int numWindows, Rect *boundary, float *overlap);
+		void cltldOverlapRect_self(int *windows, int numWindows, Rect *boundary, float *overlap);
+		int convertToString2(const char *filename, std::string& s);
+
+	};
 
 } /* namespace tld */
 #endif /* TLD_H_ */

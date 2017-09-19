@@ -59,6 +59,9 @@ void DetectionResult::init(int numWindows, int numTrees)
     variances = new float[numWindows];
     posteriors = new float[numWindows];
     featureVectors = new int[numWindows * numTrees];
+	windowFlags = new float[numWindows];
+	for (int i = 0; i < numWindows; i++)
+		windowFlags[i] = 0.0f;
     delete confidentIndices;
     confidentIndices = new vector<int>();
 

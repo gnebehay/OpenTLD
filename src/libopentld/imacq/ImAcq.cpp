@@ -42,7 +42,8 @@ static void msleep(int milliseconds)
 ImAcq *imAcqAlloc()
 {
     ImAcq *imAcq = (ImAcq *)malloc(sizeof(ImAcq));
-    imAcq->method = IMACQ_CAM;
+   //  imAcq->method = IMACQ_CAM;
+	imAcq->method = 2;
     imAcq->currentFrame = 1;
     imAcq->lastFrame = 0;
     imAcq->camNo = 0;
@@ -52,6 +53,7 @@ ImAcq *imAcqAlloc()
 
 void imAcqInit(ImAcq *imAcq)
 {
+	// imAcq->method = 2;
     if(imAcq->method == IMACQ_CAM)
     {
         imAcq->capture = cvCaptureFromCAM(imAcq->camNo);
@@ -64,7 +66,8 @@ void imAcqInit(ImAcq *imAcq)
     }
     else if(imAcq->method == IMACQ_VID)
     {
-        imAcq->capture = cvCaptureFromAVI(imAcq->imgPath);
+         imAcq->capture = cvCaptureFromAVI(imAcq->imgPath);
+		//imAcq->capture = cvCaptureFromAVI("D:\\OpenTLD-master\\build\\bin\\Release\\IMG_5903.MOV");
 
         if(imAcq->capture == NULL)
         {
@@ -283,3 +286,4 @@ int imAcqVidGetNumberOfFrames(ImAcq *imAcq)
 {
     return ((int) cvGetCaptureProperty(imAcq->capture , CV_CAP_PROP_FRAME_COUNT));
 }
+

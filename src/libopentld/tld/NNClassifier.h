@@ -29,6 +29,7 @@
 #include <vector>
 
 #include <opencv/cv.h>
+#include  <CL/cl.h>
 
 #include "NormalizedPatch.h"
 #include "DetectionResult.h"
@@ -36,19 +37,41 @@
 namespace tld
 {
 
+
+class nnClassifyStruct
+{
+public:
+float conf;
+int index;
+bool flag;
+};
+ 
+
 class NNClassifier
 {
     float ncc(float *f1, float *f2);
+	
 public:
     bool enabled;
 
     int *windows;
+	//Configurable members
+ 
+	int numWindows;
     float thetaFP;
     float thetaTP;
     DetectionResult *detectionResult;
     std::vector<NormalizedPatch>* falsePositives;
-    std::vector<NormalizedPatch>* truePositives;
+    std::vector<NormalizedPatch>* truePositives;  
+	float *pNNResultsArray;
+	float *pcandidatesToNNClassifyIndexArray;
+	float *pcandidatesToNNClassifyPatches;
+	std::vector<int> *candidatesToNNClassifyIndexVector;
+	std::vector <nnClassifyStruct> * candidatesToNNClassifyVector;
 
+	nnClassifyStruct  nnClassifyStructInstance;
+
+	 
     NNClassifier();
     virtual ~NNClassifier();
 
@@ -58,6 +81,46 @@ public:
     float classifyWindow(const cv::Mat &img, int windowIdx);
     void learn(std::vector<NormalizedPatch> patches);
     bool filter(const cv::Mat &img, int windowIdx);
+	
+	
+	
+	//for opencl begin in NNclassifier
+	bool clNNFilter(const cv::Mat &img);
+	// variable members
+	cl_platform_id  platform;	//the chosen platform
+	cl_int	        status;
+	cl_device_id    *devices;
+	cl_context       context;
+	cl_command_queue commandQueue;
+	cl_program       program;
+
+
+	void VectorToArray();
+	/*
+	* class NormalizedPatch
+	* {
+	* public:
+	*	float values[TLD_PATCH_SIZE *TLD_PATCH_SIZE];
+	*	bool positive;
+	*};
+	*/
+	float *pSrcTruePostiveData; //float values[TLD_PATCH_SIZE *TLD_PATCH_SIZE]; 
+	float *pSrcFalsePostiveData;
+
+	cl_mem  oclbufferSrcData;
+	cl_mem  oclbufferWindows;
+	cl_mem  oclbuffercandidatesToNNClassifyIndexArray;
+	cl_mem 	oclbufferpNNResultsArray;
+	cl_mem oclbufferSrcTruePostiveData;  // device memory to SrcTruePostiveData
+	cl_mem oclbufferSrcFalsePostiveData; // device memory to SrcFalsePostiveData
+	cl_mem oclbufferCandidatesToNNClassifyPatches; // candidatest to NNClassify patches from host to devices.
+
+	 
+	cl_kernel        kernel_nnClassifier;
+
+
+	//for opencl end in NNclassifier
+
 };
 
 } /* namespace tld */

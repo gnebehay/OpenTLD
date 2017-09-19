@@ -17,11 +17,11 @@
 *
 */
 /*
- * MainX.cpp
- *
- *  Created on: Nov 17, 2011
- *      Author: Georg Nebehay
- */
+* MainX.cpp
+*
+*  Created on: Nov 17, 2011
+*      Author: Georg Nebehay
+*/
 
 #include "Main.h"
 
@@ -36,266 +36,279 @@ using namespace cv;
 
 void Main::doWork()
 {
+	IplImage* dst;
 	Trajectory trajectory;
-    IplImage *img = imAcqGetImg(imAcq);
-    Mat grey(img->height, img->width, CV_8UC1);
-    cvtColor(cvarrToMat(img), grey, CV_BGR2GRAY);
+	IplImage *img = imAcqGetImg(imAcq);
+	Mat grey(img->height, img->width, CV_8UC1);
+	cvtColor(cvarrToMat(img), grey, CV_BGR2GRAY);
 
-    tld->detectorCascade->imgWidth = grey.cols;
-    tld->detectorCascade->imgHeight = grey.rows;
-    tld->detectorCascade->imgWidthStep = grey.step;
+	tld->detectorCascade->imgWidth = grey.cols;
+	tld->detectorCascade->imgHeight = grey.rows;
+	tld->detectorCascade->imgWidthStep = grey.step;
 
-	if(showTrajectory)
+	if (showTrajectory)
 	{
 		trajectory.init(trajectoryLength);
 	}
 
-    if(selectManually)
-    {
+	if (selectManually)
+	{
 
-        CvRect box;
+		CvRect box;
 
-        if(getBBFromUser(img, box, gui) == PROGRAM_EXIT)
-        {
-            return;
-        }
+		if (getBBFromUser(img, box, gui) == PROGRAM_EXIT)
+		{
+			return;
+		}
 
-        if(initialBB == NULL)
-        {
-            initialBB = new int[4];
-        }
+		if (initialBB == NULL)
+		{
+			initialBB = new int[4];
+		}
 
-        initialBB[0] = box.x;
-        initialBB[1] = box.y;
-        initialBB[2] = box.width;
-        initialBB[3] = box.height;
-    }
+		initialBB[0] = box.x;
+		initialBB[1] = box.y;
+		initialBB[2] = box.width;
+		initialBB[3] = box.height;
+		//initialBB[0] = 650;
+		//initialBB[1] = 550;
+		//initialBB[2] = 300;
+		//initialBB[3] = 300;
+		//initialBB[0] = 120;
+		//initialBB[1] = 120;
+		//initialBB[2] = 110;
+		//initialBB[3] = 90;
 
-    FILE *resultsFile = NULL;
 
-    if(printResults != NULL)
-    {
-        resultsFile = fopen(printResults, "w");
-        if(!resultsFile)
-        {
-            fprintf(stderr, "Error: Unable to create results-file \"%s\"\n", printResults);
-            exit(-1);
-        }
-    }
 
-    bool reuseFrameOnce = false;
-    bool skipProcessingOnce = false;
+	}
 
-    if(loadModel && modelPath != NULL)
-    {
-        tld->readFromFile(modelPath);
-        reuseFrameOnce = true;
-    }
-    else if(initialBB != NULL)
-    {
-        Rect bb = tldArrayToRect(initialBB);
+	FILE *resultsFile = NULL;
 
-        printf("Starting at %d %d %d %d\n", bb.x, bb.y, bb.width, bb.height);
+	if (printResults != NULL)
+	{
+		resultsFile = fopen(printResults, "w");
+		if (!resultsFile)
+		{
+			fprintf(stderr, "Error: Unable to create results-file \"%s\"\n", printResults);
+			exit(-1);
+		}
+	}
 
-        tld->selectObject(grey, &bb);
-        skipProcessingOnce = true;
-        reuseFrameOnce = true;
-    }
+	bool reuseFrameOnce = false;
+	bool skipProcessingOnce = false;
 
-    while(imAcqHasMoreFrames(imAcq))
-    {
-        double tic = cvGetTickCount();
+	if (loadModel && modelPath != NULL)
+	{
+		tld->readFromFile(modelPath);
+		reuseFrameOnce = true;
+	}
+	else if (initialBB != NULL)
+	{
+		Rect bb = tldArrayToRect(initialBB);
 
-        if(!reuseFrameOnce)
-        {
-            cvReleaseImage(&img);
-            img = imAcqGetImg(imAcq);
+		printf("****************Starting at %d %d %d %d***********\n", bb.x, bb.y, bb.width, bb.height);
 
-            if(img == NULL)
-            {
-                printf("current image is NULL, assuming end of input.\n");
-                break;
-            }
+		tld->selectObject(grey, &bb);
+		skipProcessingOnce = true;
+		reuseFrameOnce = true;
+	}
 
-            cvtColor(cvarrToMat(img), grey, CV_BGR2GRAY);
-        }
+	while (imAcqHasMoreFrames(imAcq))
+	{
+		double tic = cvGetTickCount();
 
-        if(!skipProcessingOnce)
-        {
-            tld->processImage(cvarrToMat(img));
-        }
-        else
-        {
-            skipProcessingOnce = false;
-        }
+		if (!reuseFrameOnce)
+		{
+			cvReleaseImage(&img);
+			img = imAcqGetImg(imAcq);
 
-        if(printResults != NULL)
-        {
-            if(tld->currBB != NULL)
-            {
-                fprintf(resultsFile, "%d %.2d %.2d %.2d %.2d %f\n", imAcq->currentFrame - 1, tld->currBB->x, tld->currBB->y, tld->currBB->width, tld->currBB->height, tld->currConf);
-            }
-            else
-            {
-                fprintf(resultsFile, "%d NaN NaN NaN NaN NaN\n", imAcq->currentFrame - 1);
-            }
-        }
+			if (img == NULL)
+			{
+				printf("current image is NULL, assuming end of input.\n");
+				break;
+			}
 
-        double toc = (cvGetTickCount() - tic) / cvGetTickFrequency();
+			cvtColor(cvarrToMat(img), grey, CV_BGR2GRAY);
+		}
 
-        toc = toc / 1000000;
+		if (!skipProcessingOnce)
+		{
+			tld->detectorCascade->FramNum = imAcq->currentFrame - 1;
+			tld->processImage(cvarrToMat(img));
+		}
+		else
+		{
+			skipProcessingOnce = false;
+		}
 
-        float fps = 1 / toc;
+		if (printResults != NULL)
+		{
+			if (tld->currBB != NULL)
+			{
+				fprintf(resultsFile, "%d %.2d %.2d %.2d %.2d %f\n", imAcq->currentFrame - 1, tld->currBB->x, tld->currBB->y, tld->currBB->width, tld->currBB->height, tld->currConf);
+			}
+			else
+			{
+				fprintf(resultsFile, "%d NaN NaN NaN NaN NaN\n", imAcq->currentFrame - 1);
+			}
+		}
 
-        int confident = (tld->currConf >= threshold) ? 1 : 0;
+		double toc = (cvGetTickCount() - tic) / cvGetTickFrequency();
 
-        if(showOutput || saveDir != NULL)
-        {
-            char string[128];
+		toc = toc / 1000000;
 
-            char learningString[10] = "";
+		float fps = 1 / toc;
 
-            if(tld->learning)
-            {
-                strcpy(learningString, "Learning");
-            }
+		int confident = (tld->currConf >= threshold) ? 1 : 0;
 
-            sprintf(string, "#%d,Posterior %.2f; fps: %.2f, #numwindows:%d, %s", imAcq->currentFrame - 1, tld->currConf, fps, tld->detectorCascade->numWindows, learningString);
-            CvScalar yellow = CV_RGB(255, 255, 0);
-            CvScalar blue = CV_RGB(0, 0, 255);
-            CvScalar black = CV_RGB(0, 0, 0);
-            CvScalar white = CV_RGB(255, 255, 255);
+		if (showOutput || saveDir != NULL)
+		{
+			char string[128];
 
-            if(tld->currBB != NULL)
-            {
-                CvScalar rectangleColor = (confident) ? blue : yellow;
-                cvRectangle(img, tld->currBB->tl(), tld->currBB->br(), rectangleColor, 8, 8, 0);
+			char learningString[10] = "";
 
-				if(showTrajectory)
+			if (tld->learning)
+			{
+				strcpy(learningString, "Learning");
+			}
+
+			sprintf(string, "#%d,Posterior %.2f; fps: %.2f, #numwindows:%d, %s", imAcq->currentFrame - 1, tld->currConf, fps, tld->detectorCascade->numWindows, learningString);
+			CvScalar yellow = CV_RGB(255, 255, 0);
+			CvScalar blue = CV_RGB(0, 0, 255);
+			CvScalar black = CV_RGB(0, 0, 0);
+			CvScalar white = CV_RGB(255, 255, 255);
+
+			if (tld->currBB != NULL)
+			{
+				CvScalar rectangleColor = (confident) ? blue : yellow;
+				cvRectangle(img, tld->currBB->tl(), tld->currBB->br(), rectangleColor, 8, 8, 0);
+
+				if (showTrajectory)
 				{
-					CvPoint center = cvPoint(tld->currBB->x+tld->currBB->width/2, tld->currBB->y+tld->currBB->height/2);
-					cvLine(img, cvPoint(center.x-2, center.y-2), cvPoint(center.x+2, center.y+2), rectangleColor, 2);
-					cvLine(img, cvPoint(center.x-2, center.y+2), cvPoint(center.x+2, center.y-2), rectangleColor, 2);
+					CvPoint center = cvPoint(tld->currBB->x + tld->currBB->width / 2, tld->currBB->y + tld->currBB->height / 2);
+					cvLine(img, cvPoint(center.x - 2, center.y - 2), cvPoint(center.x + 2, center.y + 2), rectangleColor, 2);
+					cvLine(img, cvPoint(center.x - 2, center.y + 2), cvPoint(center.x + 2, center.y - 2), rectangleColor, 2);
 					trajectory.addPoint(center, rectangleColor);
 				}
-            }
-			else if(showTrajectory)
+			}
+			else if (showTrajectory)
 			{
 				trajectory.addPoint(cvPoint(-1, -1), cvScalar(-1, -1, -1));
 			}
 
-			if(showTrajectory)
+			if (showTrajectory)
 			{
 				trajectory.drawTrajectory(img);
 			}
 
-            CvFont font;
-            cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, .5, .5, 0, 1, 8);
-            cvRectangle(img, cvPoint(0, 0), cvPoint(img->width, 50), black, CV_FILLED, 8, 0);
-            cvPutText(img, string, cvPoint(25, 25), &font, white);
+			CvFont font;
+			cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, .5, .5, 0, 1, 8);
+			cvRectangle(img, cvPoint(0, 0), cvPoint(img->width, 50), black, CV_FILLED, 8, 0);
+			cvPutText(img, string, cvPoint(25, 25), &font, white);
 
-            if(showForeground)
-            {
+			if (showForeground)
+			{
 
-                for(size_t i = 0; i < tld->detectorCascade->detectionResult->fgList->size(); i++)
-                {
-                    Rect r = tld->detectorCascade->detectionResult->fgList->at(i);
-                    cvRectangle(img, r.tl(), r.br(), white, 1);
-                }
+				for (size_t i = 0; i < tld->detectorCascade->detectionResult->fgList->size(); i++)
+				{
+					Rect r = tld->detectorCascade->detectionResult->fgList->at(i);
+					cvRectangle(img, r.tl(), r.br(), white, 1);
+				}
 
-            }
+			}
 
 
-            if(showOutput)
-            {
-                gui->showImage(img);
-                char key = gui->getKey();
+			if (showOutput)
+			{
+				gui->showImage(img);
+				char key = gui->getKey();
 
-                if(key == 'q') break;
+				if (key == 'q') break;
 
-                if(key == 'b')
-                {
+				if (key == 'b')
+				{
 
-                    ForegroundDetector *fg = tld->detectorCascade->foregroundDetector;
+					ForegroundDetector *fg = tld->detectorCascade->foregroundDetector;
 
-                    if(fg->bgImg.empty())
-                    {
-                        fg->bgImg = grey.clone();
-                    }
-                    else
-                    {
-                        fg->bgImg.release();
-                    }
-                }
+					if (fg->bgImg.empty())
+					{
+						fg->bgImg = grey.clone();
+					}
+					else
+					{
+						fg->bgImg.release();
+					}
+				}
 
-                if(key == 'c')
-                {
-                    //clear everything
-                    tld->release();
-                }
+				if (key == 'c')
+				{
+					//clear everything
+					tld->release();
+				}
 
-                if(key == 'l')
-                {
-                    tld->learningEnabled = !tld->learningEnabled;
-                    printf("LearningEnabled: %d\n", tld->learningEnabled);
-                }
+				if (key == 'l')
+				{
+					tld->learningEnabled = !tld->learningEnabled;
+					printf("LearningEnabled: %d\n", tld->learningEnabled);
+				}
 
-                if(key == 'a')
-                {
-                    tld->alternating = !tld->alternating;
-                    printf("alternating: %d\n", tld->alternating);
-                }
+				if (key == 'a')
+				{
+					tld->alternating = !tld->alternating;
+					printf("alternating: %d\n", tld->alternating);
+				}
 
-                if(key == 'e')
-                {
-                    tld->writeToFile(modelExportFile);
-                }
+				if (key == 'e')
+				{
+					tld->writeToFile(modelExportFile);
+				}
 
-                if(key == 'i')
-                {
-                    tld->readFromFile(modelPath);
-                }
+				if (key == 'i')
+				{
+					tld->readFromFile(modelPath);
+				}
 
-                if(key == 'r')
-                {
-                    CvRect box;
+				if (key == 'r')
+				{
+					CvRect box;
 
-                    if(getBBFromUser(img, box, gui) == PROGRAM_EXIT)
-                    {
-                        break;
-                    }
+					if (getBBFromUser(img, box, gui) == PROGRAM_EXIT)
+					{
+						break;
+					}
 
-                    Rect r = Rect(box);
+					Rect r = Rect(box);
 
-                    tld->selectObject(grey, &r);
-                }
-            }
+					tld->selectObject(grey, &r);
+				}
+			}
 
-            if(saveDir != NULL)
-            {
-                char fileName[256];
-                sprintf(fileName, "%s/%.5d.png", saveDir, imAcq->currentFrame - 1);
+			if (saveDir != NULL)
+			{
+				char fileName[256];
+				sprintf(fileName, "%s/%.5d.png", saveDir, imAcq->currentFrame - 1);
 
-                cvSaveImage(fileName, img);
-            }
-        }
+				cvSaveImage(fileName, img);
+			}
+		}
 
-        if(reuseFrameOnce)
-        {
-            reuseFrameOnce = false;
-        }
-    }
+		if (reuseFrameOnce)
+		{
+			reuseFrameOnce = false;
+		}
+	}
 
-    cvReleaseImage(&img);
-    img = NULL;
+	cvReleaseImage(&img);
+	img = NULL;
 
-    if(exportModelAfterRun)
-    {
-        tld->writeToFile(modelExportFile);
-    }
+	if (exportModelAfterRun)
+	{
+		tld->writeToFile(modelExportFile);
+	}
 
-    if(resultsFile)
-    {
-        fclose(resultsFile);
-    }
+	if (resultsFile)
+	{
+		fclose(resultsFile);
+	}
 }

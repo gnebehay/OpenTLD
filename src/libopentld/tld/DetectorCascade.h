@@ -17,14 +17,15 @@
 *
 */
 /*
- * DetectorCascade.h
- *
- *  Created on: Nov 16, 2011
- *      Author: Georg Nebehay
- */
+* DetectorCascade.h
+*
+*  Created on: Nov 16, 2011
+*      Author: Georg Nebehay
+*/
 
 #ifndef DETECTORCASCADE_H_
 #define DETECTORCASCADE_H_
+
 
 #include "DetectionResult.h"
 #include "ForegroundDetector.h"
@@ -32,67 +33,106 @@
 #include "EnsembleClassifier.h"
 #include "Clustering.h"
 #include "NNClassifier.h"
-
+#include  <CL/cl.h>
+#include  "switch.h"
+#define TRUE 0
+#define FALSE 1
 
 namespace tld
 {
 
-//Constants
-static const int TLD_WINDOW_SIZE = 5;
-static const int TLD_WINDOW_OFFSET_SIZE = 6;
+	//Constants
+	static const int TLD_WINDOW_SIZE = 5;
+	static const int TLD_WINDOW_OFFSET_SIZE = 6;
 
-class DetectorCascade
-{
-    //Working data
-    int numScales;
-    cv::Size *scales;
-public:
-    //Configurable members
-    int minScale;
-    int maxScale;
-    bool useShift;
-    float shift;
-    int minSize;
-    int numFeatures;
-    int numTrees;
+	class DetectorCascade
+	{
+		//Working data
+		int numScales;
+		cv::Size *scales;
 
-    //Needed for init
-    int imgWidth;
-    int imgHeight;
-    int imgWidthStep;
-    int objWidth;
-    int objHeight;
+	public:
+		//Configurable members
+		int numFrame;
+		int minScale;
+		int maxScale;
+		bool useShift;
+		float shift;
+		int minSize;
+		int numFeatures;
+		int numTrees;
 
-    int numWindows;
-    int *windows;
-    int *windowOffsets;
+		//Needed for init
+		int imgWidth;
+		int imgHeight;
+		int imgWidthStep;
+		int objWidth;
+		int objHeight;
+		int FramNum;
+		int numWindows;
+		int *windows;
+		int *windowOffsets;
 
-    //State data
-    bool initialised;
 
-    //Components of Detector Cascade
-    ForegroundDetector *foregroundDetector;
-    VarianceFilter *varianceFilter;
-    EnsembleClassifier *ensembleClassifier;
-    Clustering *clustering;
-    NNClassifier *nnClassifier;
 
-    DetectionResult *detectionResult;
+		//******ocl enviroments
 
-    void propagateMembers();
+		cl_uint         numPlatforms;	//the NO. of platforms
+		cl_platform_id  platform;	//the chosen platform
+		cl_int	        status;
+		cl_uint		    numDevices;
+		cl_device_id    *devices;
+		cl_context       context;
+		cl_command_queue commandQueue;
+		cl_program       program;
+		cl_mem           inputBuffer;
+		cl_mem           outputBuffer;
+		cl_kernel        kernel;
 
-    DetectorCascade();
-    ~DetectorCascade();
+		cl_kernel kernel_ensemble;
+		cl_kernel kernel_variance;
+		cl_kernel kernel_intgegral_cols;
+		cl_kernel kernel_intgegral_rows;
+		cl_kernel kernel_nnClassifier;
 
-    void init();
+		int oclSetup();
+		int oclBuildKernel(const char *kernelName);
 
-    void initWindowOffsets();
-    void initWindowsAndScales();
 
-    void release();
-    void cleanPreviousData();
-    void detect(const cv::Mat &img);
-};
+		void oclRelease();
+
+		//******ocl enviroments end
+		//State data
+		bool initialised;
+
+		//Components of Detector Cascade
+		ForegroundDetector *foregroundDetector;
+		VarianceFilter *varianceFilter;
+		EnsembleClassifier *ensembleClassifier;
+		Clustering *clustering;
+		NNClassifier *nnClassifier;
+
+		DetectionResult *detectionResult;
+
+
+
+		DetectorCascade();
+		~DetectorCascade();
+
+		void init();
+
+		void initWindowOffsets();
+		void initWindowsAndScales();
+
+		void release();
+		void cleanPreviousData();
+
+		void cldetect(const cv::Mat &img);
+		int  convertToString(const char *filename, std::string& s);
+
+		void propagateMembers();
+		void detect(const cv::Mat &img);
+	};
 
 } /* namespace tld */
 #endif /* DETECTORCASCADE_H_ */

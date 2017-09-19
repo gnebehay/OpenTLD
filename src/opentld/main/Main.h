@@ -72,7 +72,7 @@ public:
 		showTrajectory = false;
 		trajectoryLength = 0;
 
-        selectManually = 0;
+        selectManually = 1;
 
         initialBB = NULL;
         showNotConfident = true;
