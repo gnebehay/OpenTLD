@@ -36,6 +36,8 @@
 namespace tld
 {
 
+using namespace std;
+
 class ForegroundDetector
 {
 public:
