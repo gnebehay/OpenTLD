@@ -35,6 +35,8 @@
 namespace tld
 {
 
+using namespace std;
+
 class Clustering
 {
     void calcMeanRect(std::vector<int> * indices);

@@ -28,8 +28,9 @@
 #define TLDUTIL_H_
 
 #include <utility>
-
 #include <opencv/cv.h>
+#include <opencv2/imgproc/imgproc.hpp>
+
 
 namespace tld
 {
